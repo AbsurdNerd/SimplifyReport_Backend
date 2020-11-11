@@ -17,7 +17,7 @@ class UserProfileAPIView(generics.ListCreateAPIView):
     serializer_class=UserProfileSerializer
 
 
-class FireAPIView(generics.ListCreateAPIView):
+class FireAPIView(APIView):
 
     def get(self, request, format=None):
         fire_reports = Fire.objects.all()
@@ -29,6 +29,7 @@ class FireAPIView(generics.ListCreateAPIView):
         if serializer.is_valid():
             serializer.save()
             loc1=request.data['location']
+            reporteduser_phone= request.data['user']
             res = [j.strip() for j in loc1.split(',')]
             lat1=float(res[0])
             lon1=float(res[1])
@@ -46,7 +47,7 @@ class FireAPIView(generics.ListCreateAPIView):
                 a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
                 c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
                 d = radius*c*1000  #gives distance in metres
-                if d<=250:
+                if d<=250 and i.phone!=reporteduser_phone:
                     userstonotify.append(i.phone)
                 #print(userstonotify)
             return Response(userstonotify, status=status.HTTP_201_CREATED)
@@ -80,6 +81,7 @@ class PoliceAPIView(APIView):
         if serializer.is_valid():
             serializer.save()
             do_notify = request.data['do_notify']
+            reporteduser_phone= request.data['user']
             if do_notify:
                 loc1=request.data['location']
                 res = [j.strip() for j in loc1.split(',')]
@@ -99,7 +101,7 @@ class PoliceAPIView(APIView):
                     a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
                     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
                     d = radius*c*1000  #gives distance in metres
-                    if d<=250:
+                    if d<=250 and i.phone!=reporteduser_phone:
                         userstonotify.append(i.phone)
                 #print(userstonotify)
 
