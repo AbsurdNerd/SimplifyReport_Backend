@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
+import math
+
 # Create your views here.
 
 
@@ -17,17 +19,89 @@ class UserProfileAPIView(generics.ListCreateAPIView):
 
 class FireAPIView(generics.ListCreateAPIView):
 
-    queryset=Fire.objects.all()
-    serializer_class=FireSerializer
+    def get(self, request, format=None):
+        fire_reports = Fire.objects.all()
+        serializer = FireSerializer(fire_reports, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = FireSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AmbulanceAPIView(generics.ListCreateAPIView):
+class AmbulanceAPIView(APIView):
 
-    queryset=Ambulance.objects.all()
-    serializer_class=AmbulanceSerializer
+    def get(self, request, format=None):
+        ambulance_reports = Ambulance.objects.all()
+        serializer = AmbulanceSerializer(ambulance_reports, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = AmbulanceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            loc1=request.data['location']
+            res = [j.strip() for j in loc1.split(',')]
+            lat1=float(res[0])
+            lon1=float(res[1])
+
+            userstonotify=[]
+            for i in UserProfile.objects.all():
+                loc2=i.location
+                #print(loc2)
+                res = [j.strip() for j in loc2.split(',')]
+                lat2=float(res[0])
+                lon2=float(res[1])
+                radius = 6371 
+                dlat = math.radians(lat2-lat1)
+                dlon = math.radians(lon2-lon1)
+                a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
+                c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+                d = radius*c*1000  #gives distance in metres
+                if d<=250:
+                    userstonotify.append(i.phone)
+                #print(userstonotify)
+            return Response(userstonotify, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PoliceAPIView(generics.ListCreateAPIView):
+class PoliceAPIView(APIView):
 
-    queryset=Police.objects.all()
-    serializer_class=PoliceSerializer
+    def get(self, request, format=None):
+        police_reports = Police.objects.all()
+        serializer = PoliceSerializer(police_reports, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = PoliceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            do_notify = request.data['do_notify']
+            if do_notify:
+                loc1=request.data['location']
+                res = [j.strip() for j in loc1.split(',')]
+                lat1=float(res[0])
+                lon1=float(res[1])
+
+                userstonotify=[]
+                for i in UserProfile.objects.all():
+                    loc2=i.location
+                    #print(loc2)
+                    res = [j.strip() for j in loc2.split(',')]
+                    lat2=float(res[0])
+                    lon2=float(res[1])
+                    radius = 6371 
+                    dlat = math.radians(lat2-lat1)
+                    dlon = math.radians(lon2-lon1)
+                    a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
+                    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+                    d = radius*c*1000  #gives distance in metres
+                    if d<=250:
+                        userstonotify.append(i.phone)
+                #print(userstonotify)
+
+            return Response(userstonotify, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
