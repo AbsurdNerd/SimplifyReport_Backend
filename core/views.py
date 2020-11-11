@@ -28,21 +28,6 @@ class FireAPIView(generics.ListCreateAPIView):
         serializer = FireSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class AmbulanceAPIView(APIView):
-
-    def get(self, request, format=None):
-        ambulance_reports = Ambulance.objects.all()
-        serializer = AmbulanceSerializer(ambulance_reports, many=True)
-        return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = AmbulanceSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
             loc1=request.data['location']
             res = [j.strip() for j in loc1.split(',')]
             lat1=float(res[0])
@@ -65,6 +50,21 @@ class AmbulanceAPIView(APIView):
                     userstonotify.append(i.phone)
                 #print(userstonotify)
             return Response(userstonotify, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AmbulanceAPIView(APIView):
+
+    def get(self, request, format=None):
+        ambulance_reports = Ambulance.objects.all()
+        serializer = AmbulanceSerializer(ambulance_reports, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = AmbulanceSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
