@@ -27,7 +27,7 @@ class UserProfile(models.Model):
     gender=models.CharField(max_length=10,choices=gender_choices)
     location=models.CharField(max_length=100)
     permanent_address=models.TextField(max_length=500)
-
+    token=models.TextField(max_length=512,blank=True, null=True)
 
     def __str__(self):
         return self.name

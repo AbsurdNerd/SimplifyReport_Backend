@@ -7,14 +7,27 @@ from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 import math
+from fcm_django.models import FCMDevice
 
 # Create your views here.
 
 
-class UserProfileAPIView(generics.ListCreateAPIView):
+class UserProfileAPIView(APIView):
 
-    queryset=UserProfile.objects.all()
-    serializer_class=UserProfileSerializer
+    def get(self, request, format=None):
+        user_profile = UserProfile.objects.all()
+        serializer = UserProfileSerializer(user_profile, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = UserProfileSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            phone=request.data['phone']
+            token=request.data['token']
+            FCMDevice.objects.create(device_id=phone,registration_id=token,type="android")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FireAPIView(APIView):
@@ -49,8 +62,10 @@ class FireAPIView(APIView):
                 d = radius*c*1000  #gives distance in metres
                 if d<=250 and i.phone!=reporteduser_phone:
                     userstonotify.append(i.phone)
-                #print(userstonotify)
-            return Response(userstonotify, status=status.HTTP_201_CREATED)
+            for device in userstonotify:
+                devices=FCMDevice.objects.filter(device_id=device)  
+                devices.send_message(title="Alert ❌❌", body="Fire😱 in the range of 250m")
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -65,6 +80,9 @@ class AmbulanceAPIView(APIView):
         serializer = AmbulanceSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+            reporteduser_phone= request.data['user']
+            devices=FCMDevice.objects.filter(device_id=reporteduser_phone)  
+            devices.send_message(title="Got your request 👍", body="Ambulance🚑 is coming soon.")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -103,7 +121,9 @@ class PoliceAPIView(APIView):
                     d = radius*c*1000  #gives distance in metres
                     if d<=250 and i.phone!=reporteduser_phone:
                         userstonotify.append(i.phone)
-                #print(userstonotify)
+                for device in userstonotify:
+                    devices=FCMDevice.objects.filter(device_id=device)  
+                    devices.send_message(title="Alert ❌❌", body="Something is stolen🚔in the range of 250m")
 
-            return Response(userstonotify, status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
