@@ -11,14 +11,20 @@ from fcm_django.models import FCMDevice
 
 # Create your views here.
 
-
 class UserProfileAPIView(APIView):
 
     def get(self, request, format=None):
-        user_profile = UserProfile.objects.all()
-        serializer = UserProfileSerializer(user_profile, many=True)
-        return Response(serializer.data)
 
+        phone=request.data['phone']
+        try:
+            user = UserProfile.objects.get(phone=phone)
+        except UserProfile.DoesNotExist:
+            user = None
+        if user:
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    
     def post(self, request, format=None):
         serializer = UserProfileSerializer(data=request.data)
         if serializer.is_valid():
@@ -30,10 +36,25 @@ class UserProfileAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+    def put(self, request, *args, **kwargs):
+        phone=request.data['phone']
+        token=request.data['token']
+        try:
+            user = UserProfile.objects.get(phone=phone)
+        except UserProfile.DoesNotExist:
+            user = None
+        if user:
+            user.token=token
+            user.save()
+            return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 class FireAPIView(APIView):
 
     def get(self, request, format=None):
-        fire_reports = Fire.objects.all()
+        phone= request.data['phone']
+        fire_reports = Fire.objects.filter(user=phone).order_by('-id')
         serializer = FireSerializer(fire_reports, many=True)
         return Response(serializer.data)
 
@@ -72,7 +93,8 @@ class FireAPIView(APIView):
 class AmbulanceAPIView(APIView):
 
     def get(self, request, format=None):
-        ambulance_reports = Ambulance.objects.all()
+        phone= request.data['phone']
+        ambulance_reports = Ambulance.objects.filter(user=phone).order_by('-id')
         serializer = AmbulanceSerializer(ambulance_reports, many=True)
         return Response(serializer.data)
 
@@ -90,7 +112,8 @@ class AmbulanceAPIView(APIView):
 class PoliceAPIView(APIView):
 
     def get(self, request, format=None):
-        police_reports = Police.objects.all()
+        phone= request.data['phone']
+        police_reports = Police.objects.filter(user=phone).order_by('-id')
         serializer = PoliceSerializer(police_reports, many=True)
         return Response(serializer.data)
 
@@ -127,3 +150,8 @@ class PoliceAPIView(APIView):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+   
+        
