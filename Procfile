@@ -1,1 +1,1 @@
-web: gunicorn simplifyrepor.wsgi
+web: gunicorn simplifyreport.wsgi
