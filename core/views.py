@@ -16,6 +16,8 @@ class UserProfileAPIView(APIView):
     def get_queryset(self):
         user_profile=UserProfile.objects.all()
         phone = self.request.query_params.get('phone')
+        phone="+"+phone[1:]
+        print(phone)
         if phone:
             try:
                 user_profile = UserProfile.objects.filter(phone=phone).order_by('-id')
@@ -52,6 +54,9 @@ class UserProfileAPIView(APIView):
         if user:
             user.token=token
             user.save()
+            fcm=FCMDevice.objects.get(device_id=phone)
+            fcm.registration_id=token
+            fcm.save()
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -61,6 +66,7 @@ class FireAPIView(APIView):
     def get_queryset(self):
         fire_reports=Fire.objects.all()
         phone = self.request.query_params.get('phone')
+        phone="+"+phone[1:]
         if phone:
             fire_reports = Fire.objects.filter(user=phone).order_by('-id')
         return fire_reports
@@ -109,6 +115,7 @@ class AmbulanceAPIView(APIView):
     def get_queryset(self):
         ambulance_reports=Ambulance.objects.all()
         phone = self.request.query_params.get('phone')
+        phone="+"+phone[1:]
         if phone:
             ambulance_reports = Ambulance.objects.filter(user=phone).order_by('-id')
         return ambulance_reports
@@ -136,6 +143,7 @@ class PoliceAPIView(APIView):
     def get_queryset(self):
         police_reports=Police.objects.all()
         phone = self.request.query_params.get('phone')
+        phone="+"+phone[1:]
         if phone:
             police_reports = Police.objects.filter(user=phone).order_by('-id')
         return police_reports
