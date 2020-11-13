@@ -7,6 +7,24 @@ Immediate help is provided to people in cases of emergencies as these. User can 
 This repository contains the REST APIs of the application.
 > **Deployed APIs can be found [here](https://simplify-reports.herokuapp.com/).**
 
+ ### API Endpoints
+ - Creating User Profile - GET, PUT and POST request
+```
+https://simplify-reports.herokuapp.com/profile/
+```
+- Making fire reports - GET and POST request
+```
+https://simplify-reports.herokuapp.com/fire/
+```
+- Making police reports - GET and POST request
+```
+https://simplify-reports.herokuapp.com/police/
+```
+- Calling ambulance - GET and POST request
+```
+https://simplify-reports.herokuapp.com/ambulance/
+```
+ 
  
 ## Quick Start
 
