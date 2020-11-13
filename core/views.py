@@ -16,9 +16,9 @@ class UserProfileAPIView(APIView):
     def get_queryset(self):
         user_profile=UserProfile.objects.all()
         phone = self.request.query_params.get('phone')
-        phone="+"+phone[1:]
         print(phone)
         if phone:
+            phone="+"+phone[1:]
             try:
                 user_profile = UserProfile.objects.filter(phone=phone).order_by('-id')
             except UserProfile.DoesNotExist:
@@ -66,8 +66,8 @@ class FireAPIView(APIView):
     def get_queryset(self):
         fire_reports=Fire.objects.all()
         phone = self.request.query_params.get('phone')
-        phone="+"+phone[1:]
         if phone:
+            phone="+"+phone[1:]
             fire_reports = Fire.objects.filter(user=phone).order_by('-id')
         return fire_reports
 
@@ -115,8 +115,8 @@ class AmbulanceAPIView(APIView):
     def get_queryset(self):
         ambulance_reports=Ambulance.objects.all()
         phone = self.request.query_params.get('phone')
-        phone="+"+phone[1:]
         if phone:
+            phone="+"+phone[1:]
             ambulance_reports = Ambulance.objects.filter(user=phone).order_by('-id')
         return ambulance_reports
 
@@ -143,8 +143,8 @@ class PoliceAPIView(APIView):
     def get_queryset(self):
         police_reports=Police.objects.all()
         phone = self.request.query_params.get('phone')
-        phone="+"+phone[1:]
         if phone:
+            phone="+"+phone[1:]
             police_reports = Police.objects.filter(user=phone).order_by('-id')
         return police_reports
 
