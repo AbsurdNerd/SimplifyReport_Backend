@@ -13,15 +13,21 @@ from fcm_django.models import FCMDevice
 
 class UserProfileAPIView(APIView):
 
-    def get(self, request, format=None):
+    def get_queryset(self):
+        user_profile=UserProfile.objects.all()
+        phone = self.request.query_params.get('phone')
+        if phone:
+            try:
+                user_profile = UserProfile.objects.filter(phone=phone)
+            except UserProfile.DoesNotExist:
+                user = None
+        return user_profile
 
-        phone=request.data['phone']
-        try:
-            user = UserProfile.objects.get(phone=phone)
-        except UserProfile.DoesNotExist:
-            user = None
-        if user:
-            return Response(status=status.HTTP_200_OK)
+    def get(self, request, format=None):
+        user=self.get_queryset()
+        serializer=UserProfileSerializer(user,many=True)
+        if serializer.data:
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
     
     
