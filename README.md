@@ -26,7 +26,7 @@ https://simplify-reports.herokuapp.com/ambulance/
 ```
  
  
-## Quick Start
+### Quick Start
 
 - Fork and Clone the repository using-
 ```
@@ -60,7 +60,7 @@ python manage.py runserver
 - Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in the browser.
 
 
-## Our Team 😄:
+### Our Team 😄:
 
 | S.No. | Name               | Role                      | GitHub Username :octocat:                              |
 | ----- | ------------------ | ------------------------- | ----------------------------------------------------   |
