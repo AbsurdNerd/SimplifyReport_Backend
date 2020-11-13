@@ -18,7 +18,7 @@ class UserProfileAPIView(APIView):
         phone = self.request.query_params.get('phone')
         if phone:
             try:
-                user_profile = UserProfile.objects.filter(phone=phone)
+                user_profile = UserProfile.objects.filter(phone=phone).order_by('-id')
             except UserProfile.DoesNotExist:
                 user = None
         return user_profile
