@@ -52,11 +52,19 @@ class UserProfileAPIView(APIView):
 
 class FireAPIView(APIView):
 
-    def get(self, request, format=None):
-        phone= request.data['phone']
-        fire_reports = Fire.objects.filter(user=phone).order_by('-id')
-        serializer = FireSerializer(fire_reports, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        fire_reports=Fire.objects.all()
+        phone = self.request.query_params.get('phone')
+        if phone:
+            fire_reports = Fire.objects.filter(user=phone).order_by('-id')
+        return fire_reports
+
+    def get(self,request,format=None):
+        queryset=self.get_queryset()
+        serializer=FireSerializer(queryset,many=True)
+        if serializer.data:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, format=None):
         serializer = FireSerializer(data=request.data)
@@ -92,11 +100,19 @@ class FireAPIView(APIView):
 
 class AmbulanceAPIView(APIView):
 
-    def get(self, request, format=None):
-        phone= request.data['phone']
-        ambulance_reports = Ambulance.objects.filter(user=phone).order_by('-id')
-        serializer = AmbulanceSerializer(ambulance_reports, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        ambulance_reports=Ambulance.objects.all()
+        phone = self.request.query_params.get('phone')
+        if phone:
+            ambulance_reports = Ambulance.objects.filter(user=phone).order_by('-id')
+        return ambulance_reports
+
+    def get(self,request,format=None):
+        queryset=self.get_queryset()
+        serializer=AmbulanceSerializer(queryset,many=True)
+        if serializer.data:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, format=None):
         serializer = AmbulanceSerializer(data=request.data)
@@ -111,11 +127,19 @@ class AmbulanceAPIView(APIView):
 
 class PoliceAPIView(APIView):
 
-    def get(self, request, format=None):
-        phone= request.data['phone']
-        police_reports = Police.objects.filter(user=phone).order_by('-id')
-        serializer = PoliceSerializer(police_reports, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        police_reports=Police.objects.all()
+        phone = self.request.query_params.get('phone')
+        if phone:
+            police_reports = Police.objects.filter(user=phone).order_by('-id')
+        return police_reports
+
+    def get(self,request,format=None):
+        queryset=self.get_queryset()
+        serializer=PoliceSerializer(queryset,many=True)
+        if serializer.data:
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, format=None):
         serializer = PoliceSerializer(data=request.data)
