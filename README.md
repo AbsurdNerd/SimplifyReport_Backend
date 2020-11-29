@@ -35,7 +35,7 @@ git clone https://github.com/AbsurdNerd/SimplifyReport_Backend
 - Create virtual environment-
 ```
 python -m venv env
-env\Scripts\activate
+source env\Scripts\activate
 ```
 - Install dependencies using-
 ```
