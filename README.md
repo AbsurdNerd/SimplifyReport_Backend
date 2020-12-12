@@ -12,6 +12,10 @@ This repository contains the REST APIs of the application.
 ```
 https://simplify-reports.herokuapp.com/profile/
 ```
+- For User Login
+```
+http://127.0.0.1:8000/rest-auth/login/
+```
 - Making fire reports - GET and POST request
 ```
 https://simplify-reports.herokuapp.com/fire/
