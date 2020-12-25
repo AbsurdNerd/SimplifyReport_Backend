@@ -41,7 +41,15 @@ INSTALLED_APPS = [
     'rest_framework',
     'core',
     'fcm_django',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
 ]
+
+SITE_ID = 1
 
 FCM_DJANGO_SETTINGS = {
     "FCM_SERVER_KEY": "AAAAqhzg_1I:APA91bFic77g3QIUsTmIM-kFhOHJ-Qev60Yw7kuxgiZmDlsrpgVptISStXnHWJVIwE3Fo49IJxd5bXMXjoFIqYLgJQxLCGrnrUHsoasDAiXsf8FtC9JZsq-EQcV2bp6Ti-S3kSspR0R0"
